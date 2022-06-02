@@ -5,9 +5,28 @@ const userSchema = new Schema(
   {
     username: {
       type: String,
+      required: true,
       // unique: true -> Ideally, should be unique, but its up to you
     },
-    password: String,
+
+    imageUrl: {
+      type: String,
+      default:
+        "https://t4.ftcdn.net/jpg/00/64/67/63/360_F_64676383_LdbmhiNM6Ypzb3FM4PPuFP9rHe7ri8Ju.jpg",
+    },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+    types: ["Player", "Scouter"],
+    Posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
+    Events: [{ type: Schema.Types.ObjectId, ref: "Events" }],
+    sport: {
+      type: String,
+    },
+    team: {
+      type: String,
+    },
+    friends: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   {
     // this second object adds extra properties: `createdAt` and `updatedAt`
