@@ -24,7 +24,7 @@ router.get("/verify", isAuthenticated, (req, res, next) => {
 });
 
 router.post("/signup", fileUploader.single("userImage"), (req, res) => {
-  const { username, password, email } = req.body;
+  const { username, password, email, types, sport, team } = req.body;
 
   if (!username) {
     return res
@@ -71,6 +71,9 @@ router.post("/signup", fileUploader.single("userImage"), (req, res) => {
           username,
           password: hashedPassword,
           email,
+          types,
+          sport,
+          team,
         });
       })
       .then((user) => {
