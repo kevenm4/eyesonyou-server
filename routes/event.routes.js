@@ -14,22 +14,26 @@ router.post(
     const { title, description, author, imageUrl, join } = req.body;
     const { _id } = req.payload;
 
-    Post.create({ title, description, author, imageUrl, join }).then(
-      (createdevent) => {
-        return User.findByIdAndUpdate(_id, {
-          $push: { Events: createdevent._id },
-        })
-
-          .then((createdevent) => {
-            res.status(200).json(createdevent);
-          })
-          .catch(() =>
-            res.status(400).json({ message: "Error adding events" })
-          );
-      }
-    );
+    Event.create({ title, description, author, imageUrl, join })
+      .then((createdevent) => {
+        res.status(200).json(createdevent);
+      })
+      .catch(() => res.status(400).json({ message: "Error adding events" }));
   }
 );
+router.put("/event/:eventId/join", isAuthenticated, (req, res, next) => {
+  const { _id } = req.payload;
+  const { eventId } = req.params;
+  User.findByIdAndUpdate(
+    _id,
+    {
+      $push: { Events: eventId },
+    },
+    { new: true }
+  )
+    .then((response) => res.status(200).json(response))
+    .catch(() => res.status(400).json({ message: "Error events" }));
+});
 router.get("/event", (req, res, next) => {
   Event.find()
     .populate("join")

@@ -16,10 +16,12 @@ const userSchema = new Schema(
     },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
-    types: ["Player", "Scouter"],
+    types: {
+      type: String,
+      enum: ["Player", "Scouter"],
+    },
     Posts: [{ type: Schema.Types.ObjectId, ref: "Post" }],
-    Events: [{ type: Schema.Types.ObjectId, ref: "Events" }],
+    Events: [{ type: Schema.Types.ObjectId, ref: "Event" }],
     sport: {
       type: String,
     },

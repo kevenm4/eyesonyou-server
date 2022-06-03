@@ -31,12 +31,15 @@ router.post(
     );
   }
 );
-router.get("/post", (req, res, next) => {
+router.get("/post", isAuthenticated, (req, res, next) => {
   Post.find()
     .populate("Usercomments")
     .populate("author")
     .then((response) => res.status(200).json(response))
-    .catch(() => res.status(400).json({ message: "Post don't find" }));
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json({ message: "Post don't find" });
+    });
 });
 router.delete("/post/:postId", isAuthenticated, (req, res, next) => {
   const { postId } = req.params;

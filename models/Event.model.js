@@ -3,7 +3,6 @@ const { Schema, model } = require("mongoose");
 const eventSchema = new Schema({
   imageUrl: {
     type: String,
-    required: true,
   },
   Author: { type: Schema.Types.ObjectId, ref: "User" },
   description: {
