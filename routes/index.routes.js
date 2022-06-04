@@ -7,7 +7,7 @@ router.get("/", (req, res, next) => {
   res.json("All good in here");
 });
 
-router.use("/auth", authRoutes);
+router.use("/", authRoutes);
 router.use("/", userRoutes);
 router.use("/", commentRoutes);
 
