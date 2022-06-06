@@ -20,7 +20,7 @@ router.get("/user/:id", isAuthenticated, (req, res, next) => {
 router.put("/user/:friendId/join", isAuthenticated, (req, res, next) => {
   const { friendId } = req.params;
   const { _id } = req.payload;
-  User.findByIdAndUpdate(_id, { 
+  User.findByIdAndUpdate(_id, {
     $push: { friends: friendId },
   })
     .then((response) => res.status(200).json(response))
@@ -70,5 +70,11 @@ router.put(
     }
   }
 );
+router.delete("/user/:userId", isAuthenticated, (req, res, next) => {
+  const { userId } = req.params;
+  Post.findByIdAndRemove(userId)
+    .then((response) => res.json(response))
+    .catch((err = res.status(400).json({ message: "Invalid user supplied" })));
+});
 
 module.exports = router;

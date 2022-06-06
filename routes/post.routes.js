@@ -10,10 +10,10 @@ router.post(
   fileUploader.single("postImage"),
   isAuthenticated,
   (req, res, next) => {
-    const { title, description, Usercomments, author, imageUrl } = req.body;
+    const { title, description, imageUrl } = req.body;
     const { _id } = req.payload;
 
-    Post.create({ title, description, Usercomments, author, imageUrl }).then(
+    Post.create({ title, description, author: _id, imageUrl }).then(
       (createdPost) => {
         return User.findByIdAndUpdate(
           _id,

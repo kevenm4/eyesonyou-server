@@ -6,21 +6,19 @@ const Post = require("../models/Post.model");
 const Event = require("../models/Event.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-router.post(
-  "/user/:id/event",
-  fileUploader.single("eventImage"),
-  isAuthenticated,
-  (req, res, next) => {
-    const { title, description, author, imageUrl, join } = req.body;
-    const { _id } = req.payload;
+router.post("/user/:id/event", isAuthenticated, (req, res, next) => {
+  const { title, description, author, imageUrl, join } = req.body;
+  const { _id } = req.payload;
 
-    Event.create({ title, description, author, imageUrl, join })
-      .then((createdevent) => {
-        res.status(200).json(createdevent);
-      })
-      .catch(() => res.status(400).json({ message: "Error adding events" }));
-  }
-);
+  Event.create({ title, description, author, imageUrl, join })
+    .then((createdevent) => {
+      res.status(200).json(createdevent);
+    })
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json({ message: "Error adding events" });
+    });
+});
 router.put("/event/:eventId/join", isAuthenticated, (req, res, next) => {
   const { _id } = req.payload;
   const { eventId } = req.params;
@@ -34,7 +32,7 @@ router.put("/event/:eventId/join", isAuthenticated, (req, res, next) => {
     .then((response) => res.status(200).json(response))
     .catch(() => res.status(400).json({ message: "Error events" }));
 });
-router.get("/event", (req, res, next) => {
+router.get("/event", isAuthenticated, (req, res, next) => {
   Event.find()
     .populate("join")
     .populate("author")
