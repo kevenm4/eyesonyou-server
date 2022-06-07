@@ -26,8 +26,8 @@ router.put("/user/:friendId/join", isAuthenticated, (req, res, next) => {
     .then((response) => res.status(200).json(response))
     .catch((err) => res.status(400).json({ message: "error" }));
 });
-router.get("/user/search/:username", isAuthenticated, (req, res, next) => {
-  const { username } = req.params;
+router.post("/user/search", isAuthenticated, (req, res, next) => {
+  const { username } = req.body;
   User.find({ username })
     .populate("friends")
     .populate("Posts")
@@ -36,45 +36,34 @@ router.get("/user/search/:username", isAuthenticated, (req, res, next) => {
     .catch((err) => res.status(400).json({ message: "User not found!!" }));
 });
 
-router.put(
-  "/user",
-  isAuthenticated,
-  fileUploader.single("userImage"),
-  (req, res, next) => {
-    const { _id } = req.payload;
-    const { username, email } = req.body;
-    if (req.file) {
-      User.findByIdAndUpdate(
-        _id,
-        {
-          username,
-          email,
-          imageUrl: req.file.path,
-        },
-        { new: true }
-      )
-        .then((response) => res.json(response))
-        .catch((err) => res.status(400).json({ message: "No user updated" }));
-    } else {
-      User.findByIdAndUpdate(
-        _id,
-        {
-          username,
-          email,
-        },
-        { new: true }
-      )
+router.put("/user", isAuthenticated, (req, res, next) => {
+  const { _id } = req.payload;
+  const { username, sport, team } = req.body;
+  User.findByIdAndUpdate(
+    _id,
+    {
+      username,
+      sport,
+      team,
+    },
+    { new: true }
+  )
 
-        .then((response) => res.json(response))
-        .catch((err) => res.status(400).json({ message: "No user updated" }));
-    }
-  }
-);
-router.delete("/user/:userId", isAuthenticated, (req, res, next) => {
-  const { userId } = req.params;
-  Post.findByIdAndRemove(userId)
+    .then((response) => res.json(response))
+    .catch((err) => res.status(400).json({ message: "No user updated" }));
+});
+router.delete("/user", isAuthenticated, (req, res, next) => {
+  const { _id } = req.payload;
+  User.findByIdAndRemove(_id )
     .then((response) => res.json(response))
     .catch((err = res.status(400).json({ message: "Invalid user supplied" })));
 });
-
+router.get("/user", isAuthenticated, (req, res, next) => {
+  User.find()
+    .populate("friends")
+    .populate("Posts")
+    .populate("Events")
+    .then((response) => res.status(200).json(response))
+    .catch(() => res.status(400).json({ message: "user don't find" }));
+});
 module.exports = router;
