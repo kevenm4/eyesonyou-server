@@ -12,7 +12,16 @@ router.post("/event-create", isAuthenticated, (req, res, next) => {
 
   Event.create({ title, description, Author: _id, join: [] })
     .then((createdevent) => {
-      res.status(200).json(createdevent);
+      return User.findByIdAndUpdate(
+        _id,
+        {
+          $push: { Events: createdevent._id },
+        },
+        { new: true }
+      );
+    })
+    .then((updatedUser) => {
+      res.status(200).json(updatedUser);
     })
     .catch((err) => {
       console.log(err);
@@ -29,9 +38,22 @@ router.get("/event", isAuthenticated, (req, res, next) => {
 });
 router.delete("/event/:eventId", isAuthenticated, (req, res, next) => {
   const { eventId } = req.params;
-  Event.findByIdAndRemove(eventId)
+  Event.findByIdAndRemove(eventId)  
     .then((response) => res.json(response))
-    .catch((err = res.status(400).json({ message: "Invalid event supplied" })));
+    .catch((err => res.status(400).json({ message: "Invalid event supplied" })));
+});
+router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
+  console.log("file is: ", req.file);
+
+  if (!req.file) {
+    next(new Error("No file uploaded!"));
+    return;
+  }
+
+  // Get the URL of the uploaded file and send it as a response.
+  // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
+
+  res.json({ fileUrl: req.file.path });
 });
 router.put("/event/:eventId/join", isAuthenticated, (req, res, next) => {
   const { eventId } = req.params;

@@ -16,6 +16,20 @@ router.get("/user/:id", isAuthenticated, (req, res, next) => {
       res.status(400).json({ message: "User not found!!" });
     });
 });
+// POST "/api/upload" => Route that receives the image, sends it to Cloudinary via the fileUploader and returns the image URL
+router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
+  console.log("file is: ", req.file);
+
+  if (!req.file) {
+    next(new Error("No file uploaded!"));
+    return;
+  }
+
+  // Get the URL of the uploaded file and send it as a response.
+  // 'fileUrl' can be any name, just make sure you remember to use the same when accessing it on the frontend
+
+  res.json({ fileUrl: req.file.path });
+});
 
 router.put("/user/:friendId/join", isAuthenticated, (req, res, next) => {
   const { friendId } = req.params;
@@ -28,7 +42,8 @@ router.put("/user/:friendId/join", isAuthenticated, (req, res, next) => {
 });
 router.post("/user/search", isAuthenticated, (req, res, next) => {
   const { username } = req.body;
-  User.find({ username })
+  console.log(username);
+  User.find({ $regex: username, $options: "i" })
     .populate("friends")
     .populate("Posts")
     .populate("Events")
@@ -38,13 +53,14 @@ router.post("/user/search", isAuthenticated, (req, res, next) => {
 
 router.put("/user", isAuthenticated, (req, res, next) => {
   const { _id } = req.payload;
-  const { username, sport, team } = req.body;
+  const { username, sport, team,imageUrl} = req.body;
   User.findByIdAndUpdate(
     _id,
     {
       username,
       sport,
       team,
+      imageUrl
     },
     { new: true }
   )
@@ -54,9 +70,9 @@ router.put("/user", isAuthenticated, (req, res, next) => {
 });
 router.delete("/user", isAuthenticated, (req, res, next) => {
   const { _id } = req.payload;
-  User.findByIdAndRemove(_id )
-    .then((response) => res.json(response))
-    .catch((err = res.status(400).json({ message: "Invalid user supplied" })));
+  User.findByIdAndDelete(_id)
+    .then(() => res.status(204).send())
+    .catch((err) => res.status(400).json({ message: "Invalid user supplied" }));
 });
 router.get("/user", isAuthenticated, (req, res, next) => {
   User.find()
