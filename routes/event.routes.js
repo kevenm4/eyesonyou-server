@@ -7,10 +7,10 @@ const Event = require("../models/Event.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 
 router.post("/event-create", isAuthenticated, (req, res, next) => {
-  const { title, description } = req.body;
+  const { title, description, imageUrl } = req.body;
   const { _id } = req.payload;
 
-  Event.create({ title, description, Author: _id, join: [] })
+  Event.create({ title, description, Author: _id, join: [], imageUrl })
     .then((createdevent) => {
       return User.findByIdAndUpdate(
         _id,
@@ -38,9 +38,11 @@ router.get("/event", isAuthenticated, (req, res, next) => {
 });
 router.delete("/event/:eventId", isAuthenticated, (req, res, next) => {
   const { eventId } = req.params;
-  Event.findByIdAndRemove(eventId)  
+  Event.findByIdAndRemove(eventId)
     .then((response) => res.json(response))
-    .catch((err => res.status(400).json({ message: "Invalid event supplied" })));
+    .catch((err) =>
+      res.status(400).json({ message: "Invalid event supplied" })
+    );
 });
 router.post("/upload", fileUploader.single("imageUrl"), (req, res, next) => {
   console.log("file is: ", req.file);

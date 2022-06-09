@@ -58,7 +58,7 @@ router.delete("/post/:postId", isAuthenticated, (req, res, next) => {
   const { postId } = req.params;
   Post.findByIdAndRemove(postId)
     .then((response) => res.json(response))
-    .catch((err = res.status(400).json({ message: "Invalid post supplied" })));
+    .catch((err) => res.status(400).json({ message: "Invalid post supplied" }));
 });
 
 module.exports = router;

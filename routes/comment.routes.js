@@ -5,11 +5,11 @@ const Post = require("../models/Post.model");
 const User = require("../models/User.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 router.post("/post/:id/comment", isAuthenticated, (req, res, next) => {
-  const { author, text } = req.body;
+  const { text } = req.body;
   const { id } = req.params;
   const { _id } = req.payload;
 
-  Comment.create({ author: _id, text }).then((createdComment) => {
+  Comment.create({ Author: _id, text }).then((createdComment) => {
     return Post.findByIdAndUpdate(id, {
       $push: { Usercomments: createdComment._id },
     })
