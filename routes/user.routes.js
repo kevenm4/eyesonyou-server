@@ -4,6 +4,19 @@ const User = require("../models/User.model");
 const Comment = require("../models/Comment.model");
 const Post = require("../models/Post.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
+const { populate } = require("../models/User.model");
+
+router.get("/user", isAuthenticated, (req, res, next) => {
+  User.find()
+    .populate("Posts")
+    .populate("Events")
+    .populate("friends")
+    .then((response) => res.status(200).json(response))
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json({ message: "User not found!!" });
+    });
+});
 router.get("/user/:id", isAuthenticated, (req, res, next) => {
   const { id } = req.params;
   User.findById(id)
@@ -53,14 +66,14 @@ router.post("/user/search", isAuthenticated, (req, res, next) => {
 
 router.put("/user", isAuthenticated, (req, res, next) => {
   const { _id } = req.payload;
-  const { username, sport, team,imageUrl} = req.body;
+  const { username, sport, team, imageUrl } = req.body;
   User.findByIdAndUpdate(
     _id,
     {
       username,
       sport,
       team,
-      imageUrl
+      imageUrl,
     },
     { new: true }
   )

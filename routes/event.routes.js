@@ -28,6 +28,17 @@ router.post("/event-create", isAuthenticated, (req, res, next) => {
       res.status(400).json({ message: "Error adding events" });
     });
 });
+router.get("/event/:id", isAuthenticated, (req, res, next) => {
+  const { id } = req.params;
+  Event.findById(id)
+    .populate("Author")
+    .populate("join")
+    .then((response) => res.status(200).json(response))
+    .catch((err) => {
+      console.log(err);
+      res.status(400).json({ message: "event not found!!" });
+    });
+});
 
 router.get("/event", isAuthenticated, (req, res, next) => {
   Event.find()
