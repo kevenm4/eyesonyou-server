@@ -1,7 +1,6 @@
 const router = require("express").Router();
 const fileUploader = require("../config/cloudinary.config");
 const Comment = require("../models/Comment.model");
-const Post = require("../models/Post.model");
 const User = require("../models/User.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 router.post("/post/:id/comment", isAuthenticated, (req, res, next) => {

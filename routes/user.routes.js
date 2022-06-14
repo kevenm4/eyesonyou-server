@@ -2,13 +2,11 @@ const router = require("express").Router();
 const fileUploader = require("../config/cloudinary.config");
 const User = require("../models/User.model");
 const Comment = require("../models/Comment.model");
-const Post = require("../models/Post.model");
 const { isAuthenticated } = require("../middleware/jwt.middleware");
 const { populate } = require("../models/User.model");
 
 router.get("/user", isAuthenticated, (req, res, next) => {
   User.find()
-    .populate("Posts")
     .populate("Events")
     .populate("friends")
     .then((response) => res.status(200).json(response))
@@ -20,7 +18,6 @@ router.get("/user", isAuthenticated, (req, res, next) => {
 router.get("/user/:id", isAuthenticated, (req, res, next) => {
   const { id } = req.params;
   User.findById(id)
-    .populate("Posts")
     .populate("Events")
     .populate("friends")
     .then((response) => res.status(200).json(response))
@@ -58,7 +55,6 @@ router.post("/user/search", isAuthenticated, (req, res, next) => {
   console.log(username);
   User.find({ $regex: username, $options: "i" })
     .populate("friends")
-    .populate("Posts")
     .populate("Events")
     .then((userFromDB) => res.status(200).json(userFromDB))
     .catch((err) => res.status(400).json({ message: "User not found!!" }));
@@ -90,7 +86,6 @@ router.delete("/user", isAuthenticated, (req, res, next) => {
 router.get("/user", isAuthenticated, (req, res, next) => {
   User.find()
     .populate("friends")
-    .populate("Posts")
     .populate("Events")
     .then((response) => res.status(200).json(response))
     .catch(() => res.status(400).json({ message: "user don't find" }));
